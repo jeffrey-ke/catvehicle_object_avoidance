@@ -39,3 +39,6 @@
 
                                                       /catvehicle/camera_left/image_raw_left        /catvehicle/camera_right/image_raw_right
 ```
+### Important launch commands:
+- roslaunch catvehicle catvehicle_neighborhood.launch
+
