@@ -10,7 +10,7 @@ def testConstructor():
 def testLidarObstacleFront():
 
     hw_m = HardwareManager(threshold=10)
-    from LaserScanTestData import obstacle_in_front
+    from data.LaserScanTestData import obstacle_in_front
     obstacle_in_front = np.array(obstacle_in_front)
     hw_m.feedLidarRange(obstacle_in_front)
 
