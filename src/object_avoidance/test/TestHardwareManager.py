@@ -24,3 +24,9 @@ def testLidarObstacleFront():
     # This is a test of the functionality where every time the hw_m is fed LiDAR ranges, it creates
     # an array of tuples of the format (range, angle), where range is the distance detected that's
     # beneath the threshold, and angle is at the angle where that range was detected. 
+
+def testObstacleAvoidance():
+    hw_m = HardwareManager(threshold=10)
+    print(hw_m.getObstacleVectors(carPos=np.array([0,0,0])))
+    assert(False)
+ 

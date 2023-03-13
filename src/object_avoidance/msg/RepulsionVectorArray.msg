@@ -1,2 +1,2 @@
 int32 obstacle_count
-RepulsionVector[] vectors
+geometry_msgs/Vector3[] vectors
