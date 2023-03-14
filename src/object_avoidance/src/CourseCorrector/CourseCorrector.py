@@ -42,6 +42,7 @@ class CourseCorrector():
         l_error = self.getDistanceToWaypoint()
         if (h_error > self.error_margin):
             angular = (0, 0, self.K_a * h_error)
+            linear = (1.0, 0, 0)
         elif (l_error > self.error_margin):
             linear = (self.K_l * l_error, 0, 0)
 
