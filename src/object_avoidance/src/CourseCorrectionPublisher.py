@@ -39,7 +39,8 @@ def main():
     rate = rospy.Rate(100)
 
     cc = CourseCorrector()
-    cc.giveWaypoint((50, 50, 0))
+    cc.giveWaypoint((50, -50, 0))
+    cc.giveWaypoint((25, -3, 0))
 
     while not rospy.is_shutdown():
         cc.givePose(point=point, heading=heading)
