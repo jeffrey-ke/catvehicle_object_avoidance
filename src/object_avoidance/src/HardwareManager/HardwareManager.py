@@ -1,6 +1,6 @@
 import numpy as np
 
-headon_obstacle = np.array([20.613693, -0.190540, -0.008446])
+headon_obstacle = np.array([27, 2, 0])
 
 class HardwareManager():
     def __init__(self, threshold, angleIncrement=0.017541900277137756, startingAngle=-1.5700000524520874):
