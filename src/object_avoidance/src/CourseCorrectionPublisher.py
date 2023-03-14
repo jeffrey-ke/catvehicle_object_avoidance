@@ -1,32 +1,52 @@
 #! /usr/bin/python3
 import rospy
-from geometry_msgs.msg import Twist
-from geometry_msgs.msg import Vector3
+from geometry_msgs.msg import Twist, Vector3, Point
 from nav_msgs.msg import Odometry
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
+from CourseCorrector.CourseCorrector import CourseCorrector
+
 import math
 
-course_linear = Vector3(0.5, 0.0, 0.0)
-course_angular = Vector3(0.0, 0.0, 10.0)
 
-def reportPose(data: Odometry):
-    orientation = data.pose.pose.orientation
-    print("Quaternion pose: x: {} y: {} z: {} w: {}".format(orientation.x, orientation.y, orientation.z, orientation.w))
-    explicit_quat = [orientation.x, orientation.y, orientation.z, orientation.w]
-    pitch, roll, yaw = euler_from_quaternion(explicit_quat)
-    print("Euler pose: {}".format(euler_from_quaternion(explicit_quat)))
-    if(yaw > math.pi):
-        course_angular.z = 0.0
+point = (0.0, 0.0, 0.0)
+heading = (0.0, 0.0, 0.0)
+
+# def reportPose(data: Odometry):
+#     orientation = data.pose.pose.orientation
+#     print("Quaternion pose: x: {} y: {} z: {} w: {}".format(orientation.x, orientation.y, orientation.z, orientation.w))
+#     explicit_quat = [orientation.x, orientation.y, orientation.z, orientation.w]
+#     pitch, roll, yaw = euler_from_quaternion(explicit_quat)
+#     print("Euler pose: {}".format(euler_from_quaternion(explicit_quat)))
+#     if(yaw > math.pi):
+#         course_angular.z = 0.0
+
+def updatePose(data: Odometry):
+    global point, heading
+    pose = data.pose.pose
+    point = (pose.position.x, pose.position.y, pose.position.z)
+
+    explicit_quat = [pose.orientation.x, pose.orientation.y, 
+                     pose.orientation.z, pose.orientation.w]
+    heading = euler_from_quaternion(explicit_quat)
 
 
 def main():
     global course_linear, course_angular
+
     rospy.init_node('CourseCorrectionPublisher')
     pub = rospy.Publisher('/catvehicle/cmd_vel_safe', Twist, queue_size=10)
-    rospy.Subscriber('/catvehicle/odom', Odometry, reportPose)
+    rospy.Subscriber('/catvehicle/odom', Odometry, updatePose)
     rate = rospy.Rate(100)
+
+    cc = CourseCorrector()
+    cc.giveWaypoint((50, 50, 0))
+
     while not rospy.is_shutdown():
-        course = Twist(course_linear, course_angular)
+        cc.givePose(point=point, heading=heading)
+        linear, angular = cc.getCommandVelocity()
+        twist_linear = Vector3(linear[0], linear[1], linear[2])
+        twist_angular = Vector3(angular[0], angular[1], angular[2])
+        course = Twist(twist_linear, twist_angular)
         pub.publish(course)
         rate.sleep()
 

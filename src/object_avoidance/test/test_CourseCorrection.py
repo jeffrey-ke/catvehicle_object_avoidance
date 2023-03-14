@@ -1,4 +1,4 @@
-from src.CourseCorrector import CourseCorrector
+from src.CourseCorrector.CourseCorrector import CourseCorrector
 import math
 
 def testWaypointDistanceCalculator():
