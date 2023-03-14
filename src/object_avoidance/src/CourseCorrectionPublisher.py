@@ -11,7 +11,8 @@ course_angular = Vector3(0.0, 0.0, 1.0)
 def reportPose(data: Odometry):
     orientation = data.pose.pose.orientation
     print("Quaternion pose: x: {} y: {} z: {} w: {}".format(orientation.x, orientation.y, orientation.z, orientation.w))
-    print("Euler pose: {}".format(euler_from_quaternion(orientation)))
+    explicit_quat = [orientation.x, orientation.y, orientation.z, orientation.w]
+    print("Euler pose: {}".format(euler_from_quaternion(explicit_quat)))
 
 
 def main():
