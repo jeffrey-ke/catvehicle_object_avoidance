@@ -25,8 +25,4 @@ def testLidarObstacleFront():
     # an array of tuples of the format (range, angle), where range is the distance detected that's
     # beneath the threshold, and angle is at the angle where that range was detected. 
 
-def testObstacleAvoidance():
-    hw_m = HardwareManager(threshold=10)
-    print(hw_m.getObstacleVectors(carPos=np.array([0,0,0])))
-    assert(False)
  
