@@ -53,7 +53,9 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   # RepulsionVector.msg
-  RepulsionVectorArray.msg
+  # RepulsionVectorArray.msg
+  ObstacleArray.msg
+  Obstacle.msg
 )
 
 ## Generate services in the 'srv' folder
