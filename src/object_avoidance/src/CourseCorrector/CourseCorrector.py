@@ -23,7 +23,6 @@ class CourseCorrector():
     
     def getDistanceToWaypoint(self):
         currentWaypoint = self.waypoint[-1]
-        print()
         error = math.sqrt (math.pow(currentWaypoint[0] - self.point[0], 2)
                           + math.pow(currentWaypoint[1] - self.point[1], 2)
                           + math.pow(currentWaypoint[2] - self.point[2], 2))
