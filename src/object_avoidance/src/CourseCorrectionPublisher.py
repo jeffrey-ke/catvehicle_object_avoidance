@@ -4,6 +4,8 @@ from geometry_msgs.msg import Twist, Vector3, Point
 from nav_msgs.msg import Odometry
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from CourseCorrector.CourseCorrector import CourseCorrector
+from sensor_msgs.msg import LaserScan
+from HardwareManager.HardwareManager import HardwareManager
 
 import math
 
@@ -11,6 +13,8 @@ import math
 point = (0.0, 0.0, 0.0)
 heading = (0.0, 0.0, 0.0)
 
+cc = CourseCorrector()
+hw_m = HardwareManager(threshold=10)
 # def reportPose(data: Odometry):
 #     orientation = data.pose.pose.orientation
 #     print("Quaternion pose: x: {} y: {} z: {} w: {}".format(orientation.x, orientation.y, orientation.z, orientation.w))
@@ -29,18 +33,26 @@ def updatePose(data: Odometry):
                      pose.orientation.z, pose.orientation.w]
     heading = euler_from_quaternion(explicit_quat)
 
+def feedManager(data: LaserScan):
+    global hw_m
+    hw_m.angleIncrement = data.angle_increment
+    hw_m.startingAngle = data.angle_min
+    hw_m.feedLidarRange(data.ranges)
+    
+
 
 def main():
-    global course_linear, course_angular
+    global cc, hw_m
 
     rospy.init_node('CourseCorrectionPublisher')
     pub = rospy.Publisher('/catvehicle/cmd_vel_safe', Twist, queue_size=10)
     rospy.Subscriber('/catvehicle/odom', Odometry, updatePose)
+    rospy.Subscriber('/catvehicle/front_laser_points', LaserScan, feedManager)
     rate = rospy.Rate(100)
 
-    cc = CourseCorrector()
-    cc.giveWaypoint((50, -50, 0))
-    cc.giveWaypoint((25, -3, 0))
+    
+    cc.giveWaypoint((50, -50, 0)) #destination waypoint
+    # cc.giveWaypoint((25, -3, 0))
 
     while not rospy.is_shutdown():
         cc.givePose(point=point, heading=heading)
@@ -49,6 +61,7 @@ def main():
         twist_angular = Vector3(angular[0], angular[1], angular[2])
         course = Twist(twist_linear, twist_angular)
         pub.publish(course)
+
         rate.sleep()
 
 
