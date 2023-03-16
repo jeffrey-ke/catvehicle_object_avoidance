@@ -31,5 +31,5 @@ def testFeedAndReturnOffset():
     assert(hw_m.feedAndReturnEscapepoint(obstacle_in_front) != None)
     theta = 105 * hw_m.angleIncrement + hw_m.startingAngle
     print("Theta: ", theta)
-    assert(hw_m.feedAndReturnEscapepoint(obstacle_in_front) == (np.cos(theta) * hw_m.threshold * 2, np.sin(theta) * hw_m.threshold * 2))
-    assert(False)
+    assert(hw_m.feedAndReturnEscapepoint(obstacle_in_front) == 
+            (np.cos(theta + hw_m.angle_margin_offset) * hw_m.threshold * 2, np.sin(theta + hw_m.angle_margin_offset) * hw_m.threshold * 2))

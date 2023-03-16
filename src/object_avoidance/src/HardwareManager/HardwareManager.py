@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 headon_obstacle = np.array([27, 2, 0])
 
@@ -8,6 +9,7 @@ class HardwareManager():
         self.angleIncrement = angleIncrement
         self.startingAngle = startingAngle
         self.obstaclesArray = []
+        self.angle_margin_offset = math.pi/4
 
     def feedLidarRange(self, lidar_ranges):
         angle = self.startingAngle
@@ -23,24 +25,23 @@ class HardwareManager():
     def feedAndReturnEscapepoint(self, lidar_ranges):
         angle = self.startingAngle
         obstacle_found = False
-
+        index = 0
         for _range in lidar_ranges:
             if _range < self.threshold:
                 obstacle_found = True
                 break
+            index = index + 1
 
         if (obstacle_found is True):
-            angle = -0.00877092778683 #radians, the angle at the 89th index
-            count = 89
-            lidar_ranges = lidar_ranges[89:-1]
+            angle = self.startingAngle + index * self.angleIncrement #radians, the angle at the index
+            
+            lidar_ranges = lidar_ranges[index:-1] # start at the index you first found the object
             for _range in lidar_ranges:
                 if _range >= self.threshold * 2:
                     _range = _range if _range != float('inf') else self.threshold * 2
                     print('Angle: ', angle)
-                    print("count: ", count)
-                    return (_range * np.cos(angle), _range * np.sin(angle))
+                    return (_range * np.cos(angle + self.angle_margin_offset), _range * np.sin(angle + self.angle_margin_offset))
                 angle = angle + self.angleIncrement
-                count = count + 1
         else:
             return None
 
