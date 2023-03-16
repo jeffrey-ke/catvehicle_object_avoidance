@@ -14,7 +14,8 @@ point = (0.0, 0.0, 0.0)
 heading = (0.0, 0.0, 0.0)
 
 cc = CourseCorrector()
-hw_m = HardwareManager(threshold=10)
+hw_m = HardwareManager(threshold=13)
+obstacle_in_lidar_frame = None
 # def reportPose(data: Odometry):
 #     orientation = data.pose.pose.orientation
 #     print("Quaternion pose: x: {} y: {} z: {} w: {}".format(orientation.x, orientation.y, orientation.z, orientation.w))
@@ -34,10 +35,11 @@ def updatePose(data: Odometry):
     heading = euler_from_quaternion(explicit_quat)
 
 def feedManager(data: LaserScan):
-    global hw_m
+    global hw_m, obstacle_in_lidar_frame
     hw_m.angleIncrement = data.angle_increment
     hw_m.startingAngle = data.angle_min
-    hw_m.feedLidarRange(data.ranges)
+    obstacle_in_lidar_frame = hw_m.feedAndReturnEscapepoint(data.ranges)
+    print("Feeding hardware manager..")
     
 
 
@@ -51,11 +53,16 @@ def main():
     rate = rospy.Rate(100)
 
     
-    cc.giveWaypoint((50, -50, 0)) #destination waypoint
+    cc.giveWaypoint((50, 0, 0)) #destination waypoint
     # cc.giveWaypoint((25, -3, 0))
-
     while not rospy.is_shutdown():
         cc.givePose(point=point, heading=heading)
+        if (obstacle_in_lidar_frame is not None):
+            print("\t\tDodging!!")
+            wp = cc.getAvoidanceWaypoint([obstacle_in_lidar_frame[0], obstacle_in_lidar_frame[1], 0, 1])
+            print()
+            print("Obstacle in lidar frame: ", obstacle_in_lidar_frame)
+            print("corresponding waypoint: ", wp)
         linear, angular = cc.getCommandVelocity()
         twist_linear = Vector3(linear[0], linear[1], linear[2])
         twist_angular = Vector3(angular[0], angular[1], angular[2])

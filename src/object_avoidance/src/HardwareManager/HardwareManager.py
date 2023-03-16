@@ -9,7 +9,7 @@ class HardwareManager():
         self.angleIncrement = angleIncrement
         self.startingAngle = startingAngle
         self.obstaclesArray = []
-        self.angle_margin_offset = math.pi/4
+        self.angle_margin_offset = 1.2 * math.pi/4
 
     def feedLidarRange(self, lidar_ranges):
         angle = self.startingAngle
@@ -26,9 +26,15 @@ class HardwareManager():
         angle = self.startingAngle
         obstacle_found = False
         index = 0
+        obstacle_range = 0
+        lidar_ranges = lidar_ranges[89-12:89+12] #only care about the middle 24 degrees
+        print()
+        print(lidar_ranges)
         for _range in lidar_ranges:
             if _range < self.threshold:
+                obstacle_range = _range
                 obstacle_found = True
+                print("FOUND AN OBSTACLE")
                 break
             index = index + 1
 
@@ -39,10 +45,13 @@ class HardwareManager():
             for _range in lidar_ranges:
                 if _range >= self.threshold * 2:
                     _range = _range if _range != float('inf') else self.threshold * 2
-                    print('Angle: ', angle)
-                    return (_range * np.cos(angle + self.angle_margin_offset), _range * np.sin(angle + self.angle_margin_offset))
+                    print("\tRETURNING WAYPOINT")
+                    return (obstacle_range * np.cos(angle + self.angle_margin_offset), obstacle_range * np.sin(angle + self.angle_margin_offset))
                 angle = angle + self.angleIncrement
+            print("\tRETURNING WAYPOINT")
+            return (obstacle_range * np.cos(angle + self.angle_margin_offset), obstacle_range * np.sin(angle + self.angle_margin_offset))
         else:
+            print("NO OBSTACLE??")
             return None
 
     def getStartingAngle(self):
