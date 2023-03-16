@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 class CourseCorrector():
     
@@ -12,6 +13,21 @@ class CourseCorrector():
         self.K_a = K_a
         self.l_saturation = 10.0
 
+    def getAvoidanceWaypoint(self, obstacle_in_lidar_frame):
+        if (len(self.waypoint) > 2):
+            self.waypoint.pop() #pop the last obstacle waypoint
+        theta = self.heading[2]
+        pose = self.point
+        transformation_matrix = np.array( [[np.cos(theta), -np.sin(theta), 0, pose[0]], 
+                                       [np.sin(theta), np.cos(theta), 0, pose[1]], 
+                                       [0, 0, 1, pose[2]], 
+                                       [0, 0, 0, 1] ])
+        arg = np.atleast_2d([obstacle_in_lidar_frame[0], obstacle_in_lidar_frame[1], 0, 1]).T
+        result = np.matmul(transformation_matrix, arg)
+        new_obstacle_waypoint = (result[0][0], result[1][0], result[2][0])
+        self.giveWaypoint(new_obstacle_waypoint)
+        return new_obstacle_waypoint
+        
 
     def givePose(self, point, heading=None):
         self.point = point
