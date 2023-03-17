@@ -32,10 +32,11 @@ class HardwareManager():
         print(lidar_ranges)
         for _range in lidar_ranges:
             if _range < self.threshold:
-                obstacle_range = _range
+                if (_range > obstacle_range):
+                    obstacle_range = _range
                 obstacle_found = True
                 print("FOUND AN OBSTACLE")
-                break
+                
             index = index + 1
 
         if (obstacle_found is True):
@@ -45,11 +46,10 @@ class HardwareManager():
             for _range in lidar_ranges:
                 if _range >= self.threshold * 2:
                     _range = _range if _range != float('inf') else self.threshold * 2
-                    print("\tRETURNING WAYPOINT")
-                    return (obstacle_range * np.cos(angle + self.angle_margin_offset), obstacle_range * np.sin(angle + self.angle_margin_offset))
+                    break
                 angle = angle + self.angleIncrement
             print("\tRETURNING WAYPOINT")
-            return (obstacle_range * np.cos(angle + self.angle_margin_offset), obstacle_range * np.sin(angle + self.angle_margin_offset))
+            return (1.5 * obstacle_range * np.cos(angle + self.angle_margin_offset), 1.5 * obstacle_range * np.sin(angle + self.angle_margin_offset))
         else:
             print("NO OBSTACLE??")
             return None
