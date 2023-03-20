@@ -1,0 +1,24 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/user/repo/catvehicle_object_avoidance/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/user/repo/catvehicle_object_avoidance/src/catvehicle/include/**",
+        "/home/user/repo/catvehicle_object_avoidance/src/control_toolbox/include/**",
+        "/home/user/repo/catvehicle_object_avoidance/src/sicktoolbox/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-arm64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
